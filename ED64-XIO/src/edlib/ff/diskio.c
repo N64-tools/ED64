@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------*/
-/* Low level disk I/O module skeleton for FatFs     (C)ChaN, 2016        */
+/* Low level disk I/O module SKELETON for FatFs     (C)ChaN, 2019        */
 /*-----------------------------------------------------------------------*/
 /* If a working storage control module is available, it should be        */
 /* attached to the FatFs via a glue function rather than modifying it.   */
@@ -9,50 +9,60 @@
 
 #include "ff.h"			/* Obtains integer types */
 #include "diskio.h"		/* Declarations of disk functions */
-#include "everdrive.h"
+#include "main.h"     /* Declarations of sd disk binding functions */
 
 
 /* Definitions of physical drive number for each drive */
-#define DEV_RAM		0	/* Example: Map Ramdisk to physical drive 0 */
-#define DEV_MMC		1	/* Example: Map MMC/SD card to physical drive 1 */
-#define DEV_USB		2	/* Example: Map USB MSD to physical drive 2 */
+#define DEV_SDC      0   /* Map SD card to physical drive 0 */
+// #define DEV_RAM		1	/* Example: Map Ramdisk to physical drive 1 */
+// #define DEV_USB		2	/* Example: Map USB MSD to physical drive 2 */
 
-//extern SD_HandleTypeDef hsd;
+
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
-
 /*-----------------------------------------------------------------------*/
-DSTATUS dstat;
-BYTE dresp;
 
 DSTATUS disk_status(
         BYTE pdrv /* Physical drive nmuber to identify the drive */
         ) {
-
-    return dstat;
+    DSTATUS stat;
+	//int result;
+	// switch (pdrv) {
+	// case DEV_SDC :
+        return stat;
+    // }
+    return STA_NOINIT;
+    
 }
 
 /*-----------------------------------------------------------------------*/
-/* Inidialize a Drive                                                    */
+/* Initialize a Drive                                                    */
 
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_initialize(
         BYTE pdrv /* Physical drive nmuber to identify the drive */
         ) {
+    
+    DSTATUS stat = 0;
+    BYTE result;
+	// switch (pdrv) {
+	// case DEV_SDC :
+        result = sd_disk_initialize();
+        if(result == STA_PROTECT)stat = STA_PROTECT;
+        else if(result == STA_NODISK)stat = STA_NODISK;
+        else if (result)stat = STA_NOINIT;
+        else stat = 0;
 
-    dresp = diskInit();
-    dstat = 0;
-    if (dresp)dstat = STA_NOINIT;
-
-    return dstat;
+        return stat;
+    // }
+    // return STA_NOINIT;
 }
 
 
 
 /*-----------------------------------------------------------------------*/
 /* Read Sector(s)                                                        */
-
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_read(
@@ -62,9 +72,16 @@ DRESULT disk_read(
         UINT count /* Number of sectors to read */
         ) {
 
-    dresp = diskRead(buff, sector, count);
-    if (dresp)return RES_ERROR;
-    return RES_OK;
+    //DRESULT res;
+	BYTE result;
+
+	// switch (pdrv) {
+	// case DEV_SDC :
+        result = sd_disk_read(buff, sector, count);
+        if (result) return RES_ERROR;
+        return RES_OK;
+    // }
+    // return RES_PARERR;
 }
 
 
@@ -82,10 +99,16 @@ DRESULT disk_write(
         UINT count /* Number of sectors to write */
         ) {
 
+    //DRESULT res;
+	BYTE result;
 
-    dresp = diskWrite((BYTE *) buff, sector, count);
-    if (dresp)return RES_ERROR;
-    return RES_OK;
+	// switch (pdrv) {
+	// case DEV_SDC :
+        result = sd_disk_write((BYTE *) buff, sector, count);
+        if (result)return RES_ERROR;
+        return RES_OK;
+    // }
+    // return RES_PARERR;
 }
 
 #endif
@@ -93,39 +116,50 @@ DRESULT disk_write(
 
 /*-----------------------------------------------------------------------*/
 /* Miscellaneous Functions                                               */
-
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_ioctl(
         BYTE pdrv, /* Physical drive nmuber (0..) */
-        BYTE cmd, /* Control code */
+        BYTE cmd,  /* Control code */
         void *buff /* Buffer to send/receive control data */
         ) {
     DRESULT res = RES_ERROR;
+	//BYTE result;
 
-    switch (cmd) {
-        case CTRL_SYNC:
-            res = diskCloseRW();
-            dresp = res;
-            res = res == 0 ? RES_OK : RES_ERROR;
-            break;
+	// switch (pdrv) {
+	// case DEV_SDC :
+        switch (cmd) {
+            case CTRL_SYNC:
+                res = sd_disk_close_rw();
+                //result = res;
+                res = res == 0 ? RES_OK : RES_ERROR;
+                break;
 
-        case GET_SECTOR_COUNT:
-            *(DWORD*) buff = 0;
-            res = RES_OK;
-            break;
+            case GET_SECTOR_COUNT:
+                *(DWORD*) buff = 0;
+                res = RES_OK;
+                break;
 
-        case GET_SECTOR_SIZE:
-            *(DWORD*) buff = 512;
-            res = RES_OK;
-            break;
+            case GET_SECTOR_SIZE:
+                *(DWORD*) buff = 512;
+                res = RES_OK;
+                break;
 
-        case GET_BLOCK_SIZE:
-            *(DWORD*) buff = 512;
-            res = RES_OK;
-            break;
-    }
+            case GET_BLOCK_SIZE:
+                *(DWORD*) buff = 512;
+                res = RES_OK;
+                break;
+        }
 
-    return res;
+        return res;
+    // }
+    // return RES_PARERR;
 }
 
+DWORD get_fattime (void)
+{
+	//TODO: can we use the X7 or V3 RTC?
+	return ((DWORD)(FF_NORTC_YEAR - 1980) << 25 |
+            (DWORD)FF_NORTC_MON << 21 |
+            (DWORD)FF_NORTC_MDAY << 16);
+}

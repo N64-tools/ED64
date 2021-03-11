@@ -1,8 +1,8 @@
 /*----------------------------------------------------------------------------/
-/  FatFs - Generic FAT Filesystem module  R0.14                               /
+/  FatFs - Generic FAT Filesystem module  R0.14a                              /
 /-----------------------------------------------------------------------------/
 /
-/ Copyright (C) 2019, ChaN, all right reserved.
+/ Copyright (C) 2020, ChaN, all right reserved.
 /
 / FatFs module is an open source software. Redistribution and use of FatFs in
 / source and binary forms, with or without modification, are permitted provided
@@ -20,7 +20,7 @@
 
 
 #ifndef FF_DEFINED
-#define FF_DEFINED	86606	/* Revision ID */
+#define FF_DEFINED	80196	/* Revision ID */
 
 #ifdef __cplusplus
 extern "C" {
@@ -130,7 +130,6 @@ typedef DWORD LBA_t;
 /* Filesystem object structure (FATFS) */
 
 typedef struct {
-        BYTE	win[FF_MAX_SS];	/* Disk access window for Directory, FAT (and file data at tiny cfg) */
 	BYTE	fs_type;		/* Filesystem type (0:not mounted) */
 	BYTE	pdrv;			/* Associated physical drive */
 	BYTE	n_fats;			/* Number of FATs (1 or 2) */
@@ -173,6 +172,7 @@ typedef struct {
 	LBA_t	bitbase;		/* Allocation bitmap base sector */
 #endif
 	LBA_t	winsect;		/* Current sector appearing in the win[] */
+	BYTE	win[FF_MAX_SS];	/* Disk access window for Directory, FAT (and file data at tiny cfg) */
 } FATFS;
 
 
@@ -344,10 +344,6 @@ TCHAR* f_gets (TCHAR* buff, int len, FIL* fp);						/* Get a string from the fil
 #define f_rewinddir(dp) f_readdir((dp), 0)
 #define f_rmdir(path) f_unlink(path)
 #define f_unmount(path) f_mount(0, path, 0)
-
-#ifndef EOF
-#define EOF (-1)
-#endif
 
 
 

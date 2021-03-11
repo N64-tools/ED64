@@ -2,7 +2,7 @@
 /  FatFs Functional Configurations
 /---------------------------------------------------------------------------*/
 
-#define FFCONF_DEF	86606	/* Revision ID */
+#define FFCONF_DEF	80196	/* Revision ID */
 
 /*---------------------------------------------------------------------------/
 / Function Configurations
@@ -68,7 +68,7 @@
 / Locale and Namespace Configurations
 /---------------------------------------------------------------------------*/
 
-#define FF_CODE_PAGE	932
+#define FF_CODE_PAGE	437
 /* This option specifies the OEM code page to be used on the target system.
 /  Incorrect code page setting can cause a file open failure.
 /
@@ -168,7 +168,7 @@
 
 
 #define FF_STR_VOLUME_ID	0
-#define FF_VOLUME_STRS		"RAM","NAND","CF","SD","SD2","USB","USB2","USB3"
+#define FF_VOLUME_STRS		"SD"//,"SD2","USB","USB2","USB3","RAM","NAND","CF"
 /* FF_STR_VOLUME_ID switches support for volume ID in arbitrary strings.
 /  When FF_STR_VOLUME_ID is set to 1 or 2, arbitrary strings can be used as drive
 /  number in the path name. FF_VOLUME_STRS defines the volume ID strings for each
@@ -205,8 +205,8 @@
 /  To enable the 64-bit LBA, also exFAT needs to be enabled. (FF_FS_EXFAT == 1) */
 
 
-#define FF_MIN_GPT		0x100000000
-/* Minimum number of sectors to switch GPT format to create partition in f_mkfs and
+#define FF_MIN_GPT		0x10000000
+/* Minimum number of sectors to switch GPT as partitioning format in f_mkfs and
 /  f_fdisk function. 0x100000000 max. This option has no effect when FF_LBA64 == 0. */
 
 
@@ -228,16 +228,16 @@
 /  buffer in the filesystem object (FATFS) is used for the file data transfer. */
 
 
-#define FF_FS_EXFAT		1
+#define FF_FS_EXFAT		0
 /* This option switches support for exFAT filesystem. (0:Disable or 1:Enable)
 /  To enable exFAT, also LFN needs to be enabled. (FF_USE_LFN >= 1)
 /  Note that enabling exFAT discards ANSI C (C89) compatibility. */
 
 
-#define FF_FS_NORTC		1
-#define FF_NORTC_MON	8
-#define FF_NORTC_MDAY	23
-#define FF_NORTC_YEAR	2019
+#define FF_FS_NORTC		0
+#define FF_NORTC_MON	1
+#define FF_NORTC_MDAY	1
+#define FF_NORTC_YEAR	2020
 /* The option FF_FS_NORTC switches timestamp functiton. If the system does not have
 /  any RTC function or valid timestamp is not needed, set FF_FS_NORTC = 1 to disable
 /  the timestamp function. Every object modified by FatFs will have a fixed timestamp

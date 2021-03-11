@@ -204,17 +204,17 @@ namespace ed64usb
 
                         //Loading a ROM generated with 'makemask' over USB less than 1MB in size doesn't seem to like `0xff` padding. 
                         //Lets remove them as a workaround!
-                        for (int i = romBytes.Count; i > 0; i--) //cycle backwards through the byte array
-                        {
-                            if (romBytes[i] == 0xff)
-                            {
-                                romBytes.RemoveAt(i);
-                            }
-                            else //break on first chance.
-                            {
-                                return;
-                            }
-                        }
+                        //for (int i = romBytes.Count; i > 0; i--) //cycle backwards through the byte array
+                        //{
+                        //    if (romBytes.ElementAt(i) == 0xff)
+                        //    {
+                        //        romBytes.RemoveAt(i);
+                        //    }
+                        //    else //break on first chance.
+                        //    {
+                        //        return;
+                        //    }
+                        //}
 
                         RomWrite(romBytes.ToArray(), baseAddress);
                     }
